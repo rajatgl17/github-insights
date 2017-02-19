@@ -3,9 +3,9 @@ package in.rajatgoel.github_insights.model;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,7 +15,7 @@ public class GithubAPI {
 
 	public Long count(String urlString) throws IOException {
 		URL url = null;
-		URLConnection uc = null;
+		HttpURLConnection uc = null;
 		BufferedReader bd;
 		JSONObject jo = null;
 
@@ -26,7 +26,7 @@ public class GithubAPI {
 		}
 
 		try {
-			uc = url.openConnection();
+			uc = (HttpURLConnection) url.openConnection();
 		} catch (IOException e) {
 			System.out.println(urlString + " Error in opening connection");
 			e.printStackTrace();
@@ -42,7 +42,7 @@ public class GithubAPI {
 		try {
 			jo = (JSONObject) jp.parse(inputString);
 		} catch (ParseException e) {
-			System.out.println(urlString + "Invalid json object");
+			System.out.println(inputString + "Invalid json object");
 			e.printStackTrace();
 		}
 

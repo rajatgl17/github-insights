@@ -63,17 +63,22 @@ public class DBUpdater implements Runnable {
 		for (String language : langDateMap.keySet()) {
 			LocalDate end = LocalDate.now();
 			LocalDate start = langDateMap.get(language);
-			
+			int z=0;
 			while (!end.equals(start)) {
 				String urlString = "https://api.github.com/search/repositories?q=language:" + language + "+created:"
 						+ start;
 				Long count = gapi.count(urlString);
 				int id = langIdMap.get(language);
-				System.out.println(id + " " + start);
+				System.out.println(z + " " + start);
 				ins.InsertValues(id, start, start.getDayOfWeek().toString(), count);
 				start = start.plusDays(1);
 				try {
-					Thread.sleep(61 * 100);
+					Thread.sleep(61*100);
+					z++;
+					if(z>48){
+						Thread.sleep(60*1000*5);
+						z=0;
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
