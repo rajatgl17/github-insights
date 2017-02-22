@@ -16,7 +16,8 @@ public class DBUpdater implements Runnable {
 	@Override
 	public void run() {
 		try {
-			updateRepoCount();
+			updateCount(1); //update repocounts
+			updateCount(2); //update userscount
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -26,14 +27,25 @@ public class DBUpdater implements Runnable {
 		keepAlive = false;
 	}
 
-	private void updateRepoCount() throws IOException {
+	private void updateCount(int type) throws IOException {
+		String tableName = null;
+		String search = null;
+		if (type == 1) {
+			tableName = "repo_counts";
+			search = "repositories";
+		} else if (type == 2) {
+			tableName = "users_count";
+			search = "users";
+		}
+
 		HashMap<String, LocalDate> langDateMap = new HashMap<String, LocalDate>();
 		HashMap<String, Integer> langIdMap = new HashMap<String, Integer>();
 		GithubAPI gapi = new GithubAPI();
 		Insert ins = new Insert();
 
 		String sql = "SELECT pl.pl_id as id, name, MAX(rc.date) as date " + "FROM programming_languages as pl "
-				+ "LEFT JOIN repo_counts as rc ON pl.pl_id = pl_fk_id " + "WHERE status = 1 " + "GROUP BY pl.pl_id";
+				+ "LEFT JOIN " + tableName + " as rc ON pl.pl_id = pl_fk_id " + "WHERE status = 1 "
+				+ "GROUP BY pl.pl_id";
 		try {
 			DBConn dbc = new DBConn();
 			Connection conn = dbc.getConnection();
@@ -59,19 +71,19 @@ public class DBUpdater implements Runnable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		for (String language : langDateMap.keySet()) {
 			LocalDate end = LocalDate.now();
 			LocalDate start = langDateMap.get(language);
 			while (start.isBefore(end)) {
-				String urlString = "https://api.github.com/search/repositories?q=language:" + language + "+created:"
+				String urlString = "https://api.github.com/search/" + search + "?q=language:" + language + "+created:"
 						+ start;
 				Long count = gapi.count(urlString);
 				int id = langIdMap.get(language);
-				ins.InsertValues(id, start, start.getDayOfWeek().toString(), count);
+				ins.InsertValues(id, start, start.getDayOfWeek().toString(), count,tableName);
 				start = start.plusDays(1);
 				try {
-					Thread.sleep(61*100);
+					Thread.sleep(61 * 100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
