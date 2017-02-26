@@ -42,7 +42,6 @@ public class ProgrammingLanguagesList extends HttpServlet {
 			while(rs.next()){
 				hm.put(rs.getString("name"), rs.getInt("id"));
 			}
-			
 		} catch (SQLException e) {
 			response.sendError(400);
 		}
