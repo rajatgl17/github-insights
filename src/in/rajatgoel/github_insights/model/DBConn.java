@@ -8,7 +8,7 @@ public class DBConn {
 	
 	private Connection conn = null;
 	private static String username = "root";
-	private static String password = "";
+	private static String password = "root";
 	private static String dbUrl = "jdbc:mysql://localhost:3306/github-insights";
 	
 	public DBConn(){

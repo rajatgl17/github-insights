@@ -25,22 +25,40 @@ public class GetUserCount extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+		String lang1 = null, lang2 = null, way = "relative";
+		long sum1 = 0, sum2 = 0;
+
+		if (request.getParameterMap().containsKey("lang1"))
+			lang1 = request.getParameter("lang1");
+		if (request.getParameterMap().containsKey("lang2"))
+			lang2 = request.getParameter("lang2");
+		if (request.getParameterMap().containsKey("way"))
+			way = request.getParameter("way");
+
 		PrintWriter out = response.getWriter();
-		
+
 		DBConn dbconn = new DBConn();
 		Connection conn = dbconn.getConnection();
-		
+
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT date,count FROM user_counts WHERE pl_fk_id = 43");
-			
-			while(rs.next()){
-				out.println(rs.getString("date")+","+rs.getInt("count"));
+			ResultSet rs = stmt.executeQuery("SELECT " + "date, " + "SUM(CASE WHEN pl_fk_id=" + lang1
+					+ " THEN count ELSE 0 END) c1, " + "SUM(CASE WHEN pl_fk_id=" + lang2 + " THEN count ELSE 0 END) c2 "
+					+ "FROM user_counts " + "group by date");
+			if (way.equals("relative")) {
+				while (rs.next()) {
+					out.print(rs.getString("date") + "," + rs.getInt("c1") + "," + rs.getInt("c2") + "\n");
+				}
+			} else if (way.equals("absolute")) {
+				while (rs.next()) {
+					sum1+=rs.getInt("c1");
+					sum2+=rs.getInt("c2");
+					out.print(rs.getString("date") + "," + sum1 + "," + sum2 + "\n");
+				}
 			}
-			
+
 		} catch (SQLException e) {
-			response.sendError(400);
+			response.sendError(500);
 		}
 	}
 

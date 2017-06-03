@@ -25,7 +25,7 @@ public class GetRepoCount extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String lang1 = "43", lang2 = "44", way = "relative";
+		String lang1 = null, lang2 = null, way = "relative";
 		long sum1 = 0, sum2 = 0;
 
 		if (request.getParameterMap().containsKey("lang1"))
@@ -58,7 +58,7 @@ public class GetRepoCount extends HttpServlet {
 			}
 
 		} catch (SQLException e) {
-			response.sendError(400);
+			response.sendError(500);
 		}
 	}
 

@@ -43,7 +43,7 @@ public class LastUpdatedOn extends HttpServlet {
 			}
 
 		} catch (SQLException e) {
-			response.sendError(400);
+			response.sendError(500);
 		}
 		
 		DateTimeFormatter format = DateTimeFormatter.ofPattern("d MMM yyyy");

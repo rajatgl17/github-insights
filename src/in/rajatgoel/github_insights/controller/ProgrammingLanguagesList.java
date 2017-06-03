@@ -43,7 +43,7 @@ public class ProgrammingLanguagesList extends HttpServlet {
 				hm.put(rs.getString("name"), rs.getInt("id"));
 			}
 		} catch (SQLException e) {
-			response.sendError(400);
+			response.sendError(500);
 		}
 		
 		JSONObject obj = new JSONObject(hm);
